@@ -33,14 +33,18 @@ power_url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
 
 power_params = {
     "resource_id": "7f72-69a6-9138-089",
-    "api_key": API_KEY,
     "output_parameters": "power,power_p10,power_p90",
     "period": "PT5M",
     "hours": 24,
     "format": "json"
 }
 
-power_response = requests.get(power_url, params=power_params, timeout=30)
+power_response = requests.get(
+    power_url,
+    params=power_params,
+    headers=headers,
+    timeout=30
+)
 power_response.raise_for_status()
 
 power_data = power_response.json()
