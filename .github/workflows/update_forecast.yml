@@ -1,0 +1,43 @@
+name: Update Solcast Forecast
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Python script
+        run: python solcast_api.py
+
+      - name: Commit new forecast
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add data/
+
+          if ! git diff --cached --quiet; then
+            git commit -m "Forecast update"
+            git push
+          else
+            echo "No changes"
+          fi
