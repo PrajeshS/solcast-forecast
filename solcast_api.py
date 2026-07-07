@@ -45,8 +45,8 @@ filename = f"data/irradiance_forecast_{timestamp}.csv"
 df.to_csv(filename, index=False)
 
 print(f"Saved to {filename}")
-
-'''# ----------------------------
+'''
+# ----------------------------
 # Download power forecast
 # ----------------------------
 
@@ -74,3 +74,4 @@ df = df.merge(
     how="left"
 )
 print(df.head())
+'''
