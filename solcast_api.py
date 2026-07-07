@@ -32,7 +32,8 @@ df = pd.DataFrame(data["forecasts"])
 power_url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
 
 power_params = {
-    "resource_id": "7f72-69a6-9138-089",
+    "latitude": 6.9271,
+    "longitude": 79.8612,
     "output_parameters": "power,power_p10,power_p90",
     "period": "PT5M",
     "hours": 24,
@@ -48,6 +49,7 @@ power_response = requests.get(
 
 print(power_response.status_code)
 print(power_response.text)
+
 power_response.raise_for_status()
 
 power_data = power_response.json()
