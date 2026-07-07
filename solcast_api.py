@@ -1,6 +1,8 @@
 import requests
 import csv
-
+import os
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # API endpoint
 url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
@@ -34,7 +36,15 @@ try:
         print(f"{f['period_end']} -> {f['power']} kW")
 
     # Save CSV
-    with open("forecast.csv", "w", newline="") as file:
+    # Create folder if it doesn't exist
+    os.makedirs("data", exist_ok=True)
+
+    # Sri Lankan time
+    timestamp = datetime.now(ZoneInfo("Asia/Colombo")).strftime("%Y-%m-%d_%H-%M")
+
+    filename = f"data/forecast_{timestamp}.csv"
+
+    with open(filename, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["Time", "Power", "P10", "P90"])
 
@@ -46,7 +56,7 @@ try:
                 f["power_p90"]
             ])
 
-    print("\n✅ CSV file saved as forecast.csv")
+    print(f"\n✅ CSV file saved as {filename}")
 
 except requests.exceptions.RequestException as e:
     print("Error:", e)
