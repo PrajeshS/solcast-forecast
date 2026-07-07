@@ -45,6 +45,9 @@ power_response = requests.get(
     headers=headers,
     timeout=30
 )
+
+print(power_response.status_code)
+print(power_response.text)
 power_response.raise_for_status()
 
 power_data = power_response.json()
