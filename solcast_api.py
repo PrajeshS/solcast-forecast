@@ -1,18 +1,5 @@
 import requests
-
-API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
-
-url = "https://api.solcast.com.au/rooftop_sites"
-
-headers = {
-    "Authorization": f"Bearer {API_KEY}"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.status_code)
-print(response.text)
-'''import pandas as pd
+import pandas as pd
 import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -38,7 +25,7 @@ response = requests.get(url, params=params, headers=headers)
 response.raise_for_status()
 data = response.json()
 df = pd.DataFrame(data["forecasts"])
-# ----------------------------
+'''# ----------------------------
 # Download power forecast
 # ----------------------------
 
