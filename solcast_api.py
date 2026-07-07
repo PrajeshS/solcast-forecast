@@ -1,5 +1,18 @@
 import requests
-import pandas as pd
+
+API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
+
+url = "https://api.solcast.com.au/rooftop_sites"
+
+headers = {
+    "Authorization": f"Bearer {API_KEY}"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.status_code)
+print(response.text)
+'''import pandas as pd
 import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -68,4 +81,4 @@ filename = f"data/irradiance_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
 
-print(f"Saved to {filename}")
+print(f"Saved to {filename}")'''
