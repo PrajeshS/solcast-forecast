@@ -25,6 +25,27 @@ response = requests.get(url, params=params, headers=headers)
 response.raise_for_status()
 data = response.json()
 df = pd.DataFrame(data["forecasts"])
+df["period_end"] = (
+    pd.to_datetime(df["period_end"], utc=True)
+      .dt.tz_convert("Asia/Colombo")
+      .dt.strftime("%Y-%m-%d %H:%M:%S")
+)
+# Create the output folder if it doesn't exist
+os.makedirs("data", exist_ok=True)
+
+# Get the current Sri Lankan time
+timestamp = datetime.now(
+    ZoneInfo("Asia/Colombo")
+).strftime("%Y-%m-%d_%H-%M")
+
+# Create the filename
+filename = f"data/irradiance_forecast_{timestamp}.csv"
+
+# Save the CSV
+df.to_csv(filename, index=False)
+
+print(f"Saved to {filename}")
+
 '''# ----------------------------
 # Download power forecast
 # ----------------------------
@@ -53,19 +74,3 @@ df = df.merge(
     how="left"
 )
 print(df.head())
-
-# Create the output folder if it doesn't exist
-os.makedirs("data", exist_ok=True)
-
-# Get the current Sri Lankan time
-timestamp = datetime.now(
-    ZoneInfo("Asia/Colombo")
-).strftime("%Y-%m-%d_%H-%M")
-
-# Create the filename
-filename = f"data/irradiance_forecast_{timestamp}.csv"
-
-# Save the CSV
-df.to_csv(filename, index=False)
-
-print(f"Saved to {filename}")'''
