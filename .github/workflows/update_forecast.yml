@@ -36,7 +36,7 @@ jobs:
           git add data/
 
           if ! git diff --cached --quiet; then
-            git commit -m "Forecast update"
+            git commit -m "Update forecast"
             git push
           else
             echo "No changes"
