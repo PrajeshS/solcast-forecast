@@ -3,11 +3,9 @@ import pandas as pd
 import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
-
 API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
-
+# Download irradiance forecast
 url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
-
 params = {
     "latitude": 6.7471,    
     "longitude": 81.5,
@@ -16,11 +14,9 @@ params = {
     "hours": 336,
     "format": "json"
 }
-
 headers = {
     "Authorization": f"Bearer {API_KEY}"
 }
-
 response = requests.get(url, params=params, headers=headers)
 print(response.status_code)
 print(response.text)
@@ -34,20 +30,14 @@ df["period_end"] = (
 )
 # Create the output folder if it doesn't exist
 os.makedirs("data", exist_ok=True)
-
 # Get the current Sri Lankan time
 timestamp = datetime.now(
     ZoneInfo("Asia/Colombo")
 ).strftime("%Y-%m-%d_%H-%M")
-
 # Create the filename
-filename = f"data/irradiance_forecast_{timestamp}.csv"
-# ----------------------------
+filename = f"data/forecast_{timestamp}.csv"
 # Download power forecast
-# ----------------------------
-
 power_url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
-
 power_params = {
     "resource_id": "7f72-69a6-9138-089c",
     "output_parameters": "power,power_p10,power_p90",
@@ -55,19 +45,16 @@ power_params = {
     "hours": 24,
     "format": "json"
 }
-
 power_response = requests.get(power_url, params=power_params, headers=headers)
 power_response.raise_for_status()
-
 power_data = power_response.json()
-
 power_df = pd.DataFrame(power_data["forecasts"])
-
 power_df["period_end"] = (
     pd.to_datetime(power_df["period_end"], utc=True)
       .dt.tz_convert("Asia/Colombo")
       .dt.strftime("%Y-%m-%d %H:%M:%S")
 )
+# Merge
 df = df.merge(
     power_df[
         ["period_end", "power", "power_p10", "power_p90"]
@@ -76,10 +63,6 @@ df = df.merge(
     how="left"
 )
 print(df.head())
-
-
 # Save the CSV
 df.to_csv(filename, index=False)
-
 print(f"Saved to {filename}")
-
