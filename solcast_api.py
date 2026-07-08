@@ -60,6 +60,12 @@ power_response.raise_for_status()
 power_data = power_response.json()
 
 power_df = pd.DataFrame(power_data["forecasts"])
+
+power_df["period_end"] = (
+    pd.to_datetime(power_df["period_end"], utc=True)
+      .dt.tz_convert("Asia/Colombo")
+      .dt.strftime("%Y-%m-%d %H:%M:%S")
+)
 df = df.merge(
     power_df[
         ["period_end", "power", "power_p10", "power_p90"]
