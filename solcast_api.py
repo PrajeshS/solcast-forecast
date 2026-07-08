@@ -9,8 +9,8 @@ API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
 url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 
 params = {
-    "latitude": 6.9271,    
-    "longitude": 79.8612,
+    "latitude": 6.7471,    
+    "longitude": 81.5,
     "output_parameters": "ghi,dni,dhi,air_temp",
     "period": "PT5M",
     "hours": 336,
