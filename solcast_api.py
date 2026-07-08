@@ -40,12 +40,6 @@ timestamp = datetime.now(
 
 # Create the filename
 filename = f"data/irradiance_forecast_{timestamp}.csv"
-
-# Save the CSV
-df.to_csv(filename, index=False)
-
-print(f"Saved to {filename}")
-'''
 # ----------------------------
 # Download power forecast
 # ----------------------------
@@ -53,7 +47,7 @@ print(f"Saved to {filename}")
 power_url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
 
 power_params = {
-    "resource_id": "7f72-69a6-9138-089",
+    "resource_id": "7f72-69a6-9138-089c",
     "output_parameters": "power,power_p10,power_p90",
     "period": "PT5M",
     "hours": 24,
@@ -74,4 +68,10 @@ df = df.merge(
     how="left"
 )
 print(df.head())
-'''
+
+
+# Save the CSV
+df.to_csv(filename, index=False)
+
+print(f"Saved to {filename}")
+
