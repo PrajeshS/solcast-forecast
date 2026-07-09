@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import os
+import msal
 from datetime import datetime
 from zoneinfo import ZoneInfo
 API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
