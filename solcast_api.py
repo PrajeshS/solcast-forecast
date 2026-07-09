@@ -7,7 +7,6 @@ API_KEY = os.getenv("SOLCAST_API_KEY")
 LATITUDE = float(os.getenv("SOLCAST_LATITUDE"))
 LONGITUDE = float(os.getenv("SOLCAST_LONGITUDE"))
 RESOURCE_ID = os.getenv("SOLCAST_RESOURCE_ID")
-
 # Download irradiance forecast
 url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 params = {
