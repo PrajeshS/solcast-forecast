@@ -92,7 +92,10 @@ with open(filename, "rb") as f:
     data=f
     )
 
-upload.raise_for_status()
+if upload.status_code >= 400:
+    print(f"Upload failed: {upload.status_code}")
+    print(upload.text)
+    upload.raise_for_status()
 
 print("Uploaded to OneDrive")
 print(f"Saved to {filename}")
