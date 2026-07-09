@@ -72,6 +72,11 @@ app = msal.ConfidentialClientApplication(
 token = app.acquire_token_for_client(
     scopes=["https://graph.microsoft.com/.default"]
 )
+if "access_token" not in token:
+    print("Token acquisition failed:")
+    print(f"  Error: {token.get('error')}")
+    print(f"  Description: {token.get('error_description')}")
+    raise SystemExit(1)
 access_token = token["access_token"]
 
 with open(filename, "rb") as f:
