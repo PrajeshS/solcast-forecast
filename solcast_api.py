@@ -1,18 +1,18 @@
 import requests
 import pandas as pd
 import os
-import msal
 from datetime import datetime
 from zoneinfo import ZoneInfo
-API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
-CLIENT_ID = os.environ["ONEDRIVE_CLIENT_ID"]
-CLIENT_SECRET = os.environ["ONEDRIVE_CLIENT_SECRET"]
-TENANT_ID = os.environ["ONEDRIVE_TENANT_ID"]
+API_KEY = os.getenv("SOLCAST_API_KEY")
+LATITUDE = float(os.getenv("SOLCAST_LATITUDE"))
+LONGITUDE = float(os.getenv("SOLCAST_LONGITUDE"))
+RESOURCE_ID = os.getenv("SOLCAST_RESOURCE_ID")
+
 # Download irradiance forecast
 url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 params = {
-    "latitude": 6.7471,    
-    "longitude": 81.5,
+    "latitude": LATITUDE,    
+    "longitude": LONGITUDE,
     "output_parameters": "ghi,dni,dhi,air_temp",
     "period": "PT5M",
     "hours": 336,
@@ -22,6 +22,8 @@ headers = {
     "Authorization": f"Bearer {API_KEY}"
 }
 response = requests.get(url, params=params, headers=headers)
+print(response.status_code)
+print(response.text)
 response.raise_for_status()
 data = response.json()
 df = pd.DataFrame(data["forecasts"])
@@ -29,10 +31,10 @@ df["period_end"] = (pd.to_datetime(df["period_end"], utc=True))
 # Download power forecast
 power_url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
 power_params = {
-    "resource_id": "7f72-69a6-9138-089c",
+    "resource_id": RESOURCE_ID,
     "output_parameters": "power,power_p10,power_p90",
     "period": "PT5M",
-    "hours": 336,
+    "hours": 24,
     "format": "json"
 }
 power_response = requests.get(power_url, params=power_params, headers=headers)
@@ -53,6 +55,7 @@ df["period_end"] = (
       .dt.tz_convert("Asia/Colombo")
       .dt.strftime("%Y-%m-%d %H:%M:%S")
 )
+print(df.head())
 # Create the output folder if it doesn't exist
 os.makedirs("data", exist_ok=True)
 # Get the current Sri Lankan time
@@ -60,60 +63,7 @@ timestamp = datetime.now(
     ZoneInfo("Asia/Colombo")
 ).strftime("%Y-%m-%d_%H-%M")
 # Create the filename
-filename = f"data/solcast_forecast_{timestamp}.csv"
+filename = f"data/forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
-authority = f"https://login.microsoftonline.com/{TENANT_ID}"
-app = msal.ConfidentialClientApplication(
-    CLIENT_ID,
-    authority=authority,
-    client_credential=CLIENT_SECRET
-)
-token = app.acquire_token_for_client(
-    scopes=["https://graph.microsoft.com/.default"]
-)
-if "access_token" not in token:
-    print("Token acquisition failed:")
-    print(f"  Error: {token.get('error')}")
-    print(f"  Description: {token.get('error_description')}")
-    raise SystemExit(1)
-access_token = token["access_token"]
-# --- TEMPORARY DEBUG CHECK — remove once issue is resolved ---
-check = requests.get(
-    "https://graph.microsoft.com/v1.0/users/chathumi.w@ltl.lk/drive",
-    headers={"Authorization": f"Bearer {access_token}"}
-)
-print(f"Drive check status: {check.status_code}")
-print(check.text)
-# --- END DEBUG CHECK ---
-import base64
-import json
-
-# --- TEMPORARY DEBUG: decode token to see granted permissions ---
-payload_b64 = access_token.split(".")[1]
-padded = payload_b64 + "=" * (-len(payload_b64) % 4)
-payload = json.loads(base64.urlsafe_b64decode(padded))
-print("Token roles (granted app permissions):", payload.get("roles"))
-print("Token audience:", payload.get("aud"))
-print("Token app id:", payload.get("appid"))
-# --- END DEBUG ---
-with open(filename, "rb") as f:
-
-    upload = requests.put(
-    f"https://graph.microsoft.com/v1.0/users/chathumi.w@ltl.lk/drive/root:/Solcast Forecast/"
-    + os.path.basename(filename)
-    + ":/content",
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "text/csv"
-    },
-    data=f
-    )
-
-if upload.status_code >= 400:
-    print(f"Upload failed: {upload.status_code}")
-    print(upload.text)
-    upload.raise_for_status()
-
-print("Uploaded to OneDrive")
-print(f"Saved to {filename}")
+print(f"Saved to {filename}") so this is good 
