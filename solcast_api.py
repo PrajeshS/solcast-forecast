@@ -4,6 +4,9 @@ import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
 API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
+CLIENT_ID = os.environ["ONEDRIVE_CLIENT_ID"]
+CLIENT_SECRET = os.environ["ONEDRIVE_CLIENT_SECRET"]
+TENANT_ID = os.environ["ONEDRIVE_TENANT_ID"]
 # Download irradiance forecast
 url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 params = {
