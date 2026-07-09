@@ -77,14 +77,14 @@ access_token = token["access_token"]
 with open(filename, "rb") as f:
 
     upload = requests.put(
-        "https://graph.microsoft.com/v1.0/me/drive/root:/Solcast Forecast/"
-        + os.path.basename(filename)
-        + ":/content",
-        headers={
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "text/csv"
-        },
-        data=f
+    f"https://graph.microsoft.com/v1.0/users/chathumi.w@ltl.lk/drive/root:/Solcast Forecast/"
+    + os.path.basename(filename)
+    + ":/content",
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "text/csv"
+    },
+    data=f
     )
 
 upload.raise_for_status()
