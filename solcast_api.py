@@ -59,4 +59,34 @@ timestamp = datetime.now(
 filename = f"data/solcast_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
+authority = f"https://login.microsoftonline.com/{TENANT_ID}"
+
+app = msal.ConfidentialClientApplication(
+    CLIENT_ID,
+    authority=authority,
+    client_credential=CLIENT_SECRET
+)
+
+token = app.acquire_token_for_client(
+    scopes=["https://graph.microsoft.com/.default"]
+)
+
+access_token = token["access_token"]
+
+with open(filename, "rb") as f:
+
+    upload = requests.put(
+        "https://graph.microsoft.com/v1.0/me/drive/root:/Solcast Forecast/"
+        + os.path.basename(filename)
+        + ":/content",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "text/csv"
+        },
+        data=f
+    )
+
+upload.raise_for_status()
+
+print("Uploaded to OneDrive")
 print(f"Saved to {filename}")
