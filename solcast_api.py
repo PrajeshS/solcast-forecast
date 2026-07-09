@@ -65,4 +65,4 @@ timestamp = datetime.now(
 filename = f"data/solcast_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
-print(f"Saved to {filename}") so this is good 
+print(f"Saved to {filename}")
