@@ -63,7 +63,7 @@ timestamp = datetime.now(
     ZoneInfo("Asia/Colombo")
 ).strftime("%Y-%m-%d_%H-%M")
 # Create the filename
-filename = f"data/forecast_{timestamp}.csv"
+filename = f"data/solcast_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
 print(f"Saved to {filename}") so this is good 
