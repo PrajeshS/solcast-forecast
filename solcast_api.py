@@ -5,9 +5,9 @@ import msal
 from datetime import datetime
 from zoneinfo import ZoneInfo
 API_KEY = "Ltmj-pqWaCVKTAni0yrsexlj3ZKMUv_S"
-CLIENT_ID = os.environ["ONEDRIVE_CLIENT_ID"]
-CLIENT_SECRET = os.environ["ONEDRIVE_CLIENT_SECRET"]
-TENANT_ID = os.environ["ONEDRIVE_TENANT_ID"]
+CLIENT_ID = os.getenv["ONEDRIVE_CLIENT_ID"]
+CLIENT_SECRET = os.getenv["ONEDRIVE_CLIENT_SECRET"]
+TENANT_ID = os.getenv["ONEDRIVE_TENANT_ID"]
 # Download irradiance forecast
 url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 params = {
@@ -64,17 +64,14 @@ filename = f"data/solcast_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
 authority = f"https://login.microsoftonline.com/{TENANT_ID}"
-
 app = msal.ConfidentialClientApplication(
     CLIENT_ID,
     authority=authority,
     client_credential=CLIENT_SECRET
 )
-
 token = app.acquire_token_for_client(
     scopes=["https://graph.microsoft.com/.default"]
 )
-
 access_token = token["access_token"]
 
 with open(filename, "rb") as f:
