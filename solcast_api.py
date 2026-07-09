@@ -49,7 +49,6 @@ df["period_end"] = (
       .dt.tz_convert("Asia/Colombo")
       .dt.strftime("%Y-%m-%d %H:%M:%S")
 )
-print(df.head())
 # Create the output folder if it doesn't exist
 os.makedirs("data", exist_ok=True)
 # Get the current Sri Lankan time
