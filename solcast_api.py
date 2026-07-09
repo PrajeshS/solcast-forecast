@@ -78,7 +78,14 @@ if "access_token" not in token:
     print(f"  Description: {token.get('error_description')}")
     raise SystemExit(1)
 access_token = token["access_token"]
-
+# --- TEMPORARY DEBUG CHECK — remove once issue is resolved ---
+check = requests.get(
+    "https://graph.microsoft.com/v1.0/users/chathumi.w@ltl.lk/drive",
+    headers={"Authorization": f"Bearer {access_token}"}
+)
+print(f"Drive check status: {check.status_code}")
+print(check.text)
+# --- END DEBUG CHECK ---
 with open(filename, "rb") as f:
 
     upload = requests.put(
