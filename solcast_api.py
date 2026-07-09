@@ -86,6 +86,17 @@ check = requests.get(
 print(f"Drive check status: {check.status_code}")
 print(check.text)
 # --- END DEBUG CHECK ---
+import base64
+import json
+
+# --- TEMPORARY DEBUG: decode token to see granted permissions ---
+payload_b64 = access_token.split(".")[1]
+padded = payload_b64 + "=" * (-len(payload_b64) % 4)
+payload = json.loads(base64.urlsafe_b64decode(padded))
+print("Token roles (granted app permissions):", payload.get("roles"))
+print("Token audience:", payload.get("aud"))
+print("Token app id:", payload.get("appid"))
+# --- END DEBUG ---
 with open(filename, "rb") as f:
 
     upload = requests.put(
