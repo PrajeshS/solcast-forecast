@@ -28,7 +28,7 @@ power_params = {
     "resource_id": "7f72-69a6-9138-089c",
     "output_parameters": "power,power_p10,power_p90",
     "period": "PT5M",
-    "hours": 24,
+    "hours": 336,
     "format": "json"
 }
 power_response = requests.get(power_url, params=power_params, headers=headers)
@@ -56,7 +56,7 @@ timestamp = datetime.now(
     ZoneInfo("Asia/Colombo")
 ).strftime("%Y-%m-%d_%H-%M")
 # Create the filename
-filename = f"data/forecast_{timestamp}.csv"
+filename = f"data/solcast_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
 print(f"Saved to {filename}")
