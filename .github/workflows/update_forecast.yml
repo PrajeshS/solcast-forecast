@@ -5,7 +5,7 @@ jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,15 +23,7 @@ jobs:
           SOLCAST_LATITUDE: ${{ secrets.SOLCAST_LATITUDE }}
           SOLCAST_LONGITUDE: ${{ secrets.SOLCAST_LONGITUDE }}
           SOLCAST_RESOURCE_ID: ${{ secrets.SOLCAST_RESOURCE_ID }}
+          GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
+          GDRIVE_UPLOAD_TOKEN: ${{ secrets.GDRIVE_UPLOAD_TOKEN }}
         run: python solcast_api.py
-      - name: Commit new forecast
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add data/
-          if ! git diff --cached --quiet; then
-            git commit -m "Update forecast"
-            git push
-          else
-            echo "No changes"
-          fi
+      
