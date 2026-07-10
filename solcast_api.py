@@ -35,7 +35,7 @@ power_params = {
     "resource_id": RESOURCE_ID,
     "output_parameters": "power,power_p10,power_p90",
     "period": "PT5M",
-    "hours": 24,
+    "hours": 336,
     "format": "json"
 }
 power_response = requests.get(power_url, params=power_params, headers=headers)
