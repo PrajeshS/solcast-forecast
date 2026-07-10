@@ -46,7 +46,7 @@ power_df["period_end"] = (pd.to_datetime(power_df["period_end"], utc=True))
 # Merge
 df = df.merge(
     power_df[
-        ["period_end", "power", "power_p10", "power_p50", "power_p75", "power_p90"]
+        ["period_end", "power", "power_p50", "power_p75"]
     ],
     on="period_end",
     how="left"
