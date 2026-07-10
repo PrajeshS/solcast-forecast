@@ -66,21 +66,40 @@ filename = f"data/solcast_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
 print(f"Saved to {filename}")
+# --------------------------------------------
+# Create/update rolling forecast CSV
+# --------------------------------------------
 
+rolling_file = "data/rolling_forecast.csv"
+
+# Take only the first 3 forecast timestamps
+rolling_df = df.head(3).copy()
+
+# Append to existing rolling CSV if it exists
+if os.path.exists(rolling_file):
+    existing_df = pd.read_csv(rolling_file)
+    rolling_df = pd.concat([existing_df, rolling_df], ignore_index=True)
+
+# Save updated rolling CSV
+rolling_df.to_csv(rolling_file, index=False)
+
+print(f"Updated {rolling_file}")
 # --- Upload to Google Drive, then stop — no git commit ---
-with open(filename, "rb") as f:
-    csv_content = f.read()
+for file in [filename, rolling_file]:
 
-upload = requests.post(
-    f"{webapp_url}?filename={os.path.basename(filename)}&token={upload_token}",
-    data=csv_content,
-    headers={"Content-Type": "text/csv"},
-    timeout=30
-)
+    with open(file, "rb") as f:
+        csv_content = f.read()
 
-if upload.status_code >= 400 or "OK" not in upload.text:
-    print(f"Upload failed: {upload.status_code}")
-    print(upload.text)
-    upload.raise_for_status()
+    upload = requests.post(
+        f"{webapp_url}?filename={os.path.basename(file)}&token={upload_token}",
+        data=csv_content,
+        headers={"Content-Type": "text/csv"},
+        timeout=30
+    )
 
-print("Uploaded to Google Drive")
+    if upload.status_code >= 400 or "OK" not in upload.text:
+        print(f"Upload failed: {upload.status_code}")
+        print(upload.text)
+        upload.raise_for_status()
+
+    print(f"Uploaded {os.path.basename(file)} to Google Drive")
