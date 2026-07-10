@@ -14,7 +14,7 @@ url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 params = {
     "latitude": LATITUDE,    
     "longitude": LONGITUDE,
-    "output_parameters": "gti,ghi,dni,dhi,air_temp",
+    "output_parameters": "gti,ghi,dni,dhi,air_temp,",
     "period": "PT5M",
     "hours": 336,
     "format": "json"
@@ -46,7 +46,7 @@ power_df["period_end"] = (pd.to_datetime(power_df["period_end"], utc=True))
 # Merge
 df = df.merge(
     power_df[
-        ["period_end", "power", "power_p10", "power_p90"]
+        ["period_end", "power", "power_p10", "power_p50", "power_p75", "power_p90"]
     ],
     on="period_end",
     how="left"
