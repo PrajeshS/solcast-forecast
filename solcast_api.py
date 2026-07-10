@@ -33,7 +33,7 @@ df["period_end"] = (pd.to_datetime(df["period_end"], utc=True))
 power_url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
 power_params = {
     "resource_id": RESOURCE_ID,
-    "output_parameters": "power,power_p10,power_p90",
+    "output_parameters": "gti,power,power_p10,power_p90",
     "period": "PT5M",
     "hours": 336,
     "format": "json"
