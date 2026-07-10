@@ -7,6 +7,8 @@ API_KEY = os.getenv("SOLCAST_API_KEY")
 LATITUDE = float(os.getenv("SOLCAST_LATITUDE"))
 LONGITUDE = float(os.getenv("SOLCAST_LONGITUDE"))
 RESOURCE_ID = os.getenv("SOLCAST_RESOURCE_ID")
+webapp_url = os.environ["GDRIVE_WEBAPP_URL"]
+upload_token = os.environ["GDRIVE_UPLOAD_TOKEN"]
 # Download irradiance forecast
 url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 params = {
@@ -66,3 +68,21 @@ filename = f"data/solcast_forecast_{timestamp}.csv"
 # Save the CSV
 df.to_csv(filename, index=False)
 print(f"Saved to {filename}")
+
+# --- Upload to Google Drive, then stop — no git commit ---
+with open(filename, "rb") as f:
+    csv_content = f.read()
+
+upload = requests.post(
+    f"{webapp_url}?filename={os.path.basename(filename)}&token={upload_token}",
+    data=csv_content,
+    headers={"Content-Type": "text/csv"},
+    timeout=30
+)
+
+if upload.status_code >= 400 or "OK" not in upload.text:
+    print(f"Upload failed: {upload.status_code}")
+    print(upload.text)
+    upload.raise_for_status()
+
+print("Uploaded to Google Drive")
