@@ -33,7 +33,7 @@ df["period_end"] = (pd.to_datetime(df["period_end"], utc=True))
 power_url = "https://api.solcast.com.au/data/forecast/premium_pv_power"
 power_params = {
     "resource_id": RESOURCE_ID,
-    "output_parameters": "power,power_p10,power_p90",
+    "output_parameters": "power,power_p10,power_p50,power_p75,power_p90",
     "period": "PT5M",
     "hours": 336,
     "format": "json"
@@ -46,7 +46,7 @@ power_df["period_end"] = (pd.to_datetime(power_df["period_end"], utc=True))
 # Merge
 df = df.merge(
     power_df[
-        ["period_end", "power", "power_p10", "power_p75"]
+        ["period_end", "power", "power_p10", "power_p50" "power_p75", "power_p90"]
     ],
     on="period_end",
     how="left"
