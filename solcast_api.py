@@ -14,7 +14,7 @@ url = "https://api.solcast.com.au/data/forecast/radiation_and_weather"
 params = {
     "latitude": LATITUDE,    
     "longitude": LONGITUDE,
-    "output_parameters": "gti,ghi,dni,dhi,air_temp,",
+    "output_parameters": "gti,ghi,dni,dhi,air_temp",
     "period": "PT5M",
     "hours": 336,
     "format": "json"
