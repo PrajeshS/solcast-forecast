@@ -24,7 +24,6 @@ headers = {
 }
 response = requests.get(url, params=params, headers=headers)
 print(response.status_code)
-print(response.text)
 response.raise_for_status()
 data = response.json()
 df = pd.DataFrame(data["forecasts"])
