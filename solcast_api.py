@@ -1,4 +1,6 @@
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import pandas as pd
 import os
 from datetime import datetime
@@ -22,7 +24,23 @@ params = {
 headers = {
     "Authorization": f"Bearer {API_KEY}"
 }
-response = requests.get(url, params=params, headers=headers)
+retry = Retry(
+    total=3,
+    connect=3,
+    read=3,
+    backoff_factor=2,
+    status_forcelist=[429, 500, 502, 503, 504],
+    allowed_methods=["GET", "POST"]
+)
+
+session = requests.Session()
+session.mount("https://", HTTPAdapter(max_retries=retry))
+response = session.get(
+    url,
+    params=params,
+    headers=headers,
+    timeout=60
+)
 print(response.status_code)
 response.raise_for_status()
 data = response.json()
@@ -37,7 +55,12 @@ power_params = {
     "hours": 336,
     "format": "json"
 }
-power_response = requests.get(power_url, params=power_params, headers=headers)
+power_response = session.get(
+    power_url,
+    params=power_params,
+    headers=headers,
+    timeout=60
+)
 power_response.raise_for_status()
 power_data = power_response.json()
 power_df = pd.DataFrame(power_data["forecasts"])
@@ -83,11 +106,11 @@ print(f"Updated {rolling_file}")
 for file in [filename, rolling_file]:
     with open(file, "rb") as f:
         csv_content = f.read()
-    upload = requests.post(
+    upload = session.post(
         f"{webapp_url}?filename={os.path.basename(file)}&token={upload_token}",
         data=csv_content,
         headers={"Content-Type": "text/csv"},
-        timeout=30
+        timeout=60
     )
     if upload.status_code >= 400 or "OK" not in upload.text:
         print(f"Upload failed: {upload.status_code}")
