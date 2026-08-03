@@ -102,6 +102,7 @@ if os.path.exists(rolling_file):
 # Save updated rolling CSV
 rolling_df.to_csv(rolling_file, index=False)
 print(f"Updated {rolling_file}")
+print("Web App URL:", webapp_url)
 # --- Upload to Google Drive, then stop — no git commit ---
 for file in [filename, rolling_file]:
     with open(file, "rb") as f:
