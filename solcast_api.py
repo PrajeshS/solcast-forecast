@@ -114,7 +114,7 @@ for file in [filename, rolling_file]:
         timeout=60
     )
     if upload.status_code >= 400 or "OK" not in upload.text:
-        print(f"Upload failed: {upload.status_code}")
+        print(f"Upload failed: {upload.status_code},os.path.basename(file)")
         print(upload.text)
         upload.raise_for_status()
     print(f"Uploaded {os.path.basename(file)} to Google Drive")
