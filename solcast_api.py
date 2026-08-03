@@ -3,6 +3,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import pandas as pd
 import os
+import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 API_KEY = os.getenv("SOLCAST_API_KEY")
@@ -103,28 +104,53 @@ if os.path.exists(rolling_file):
 rolling_df.to_csv(rolling_file, index=False)
 print(f"Updated {rolling_file}")
 print("Web App URL:", webapp_url)
+
 # --- Upload to Google Drive, then stop — no git commit ---
 for file in [filename, rolling_file]:
 
     print("=" * 60)
     print("Uploading:", os.path.basename(file))
 
-    with open(file, "rb") as f:
-        csv_content = f.read()
+    success = False
 
-    upload = session.post(
-        f"{webapp_url}?filename={os.path.basename(file)}&token={upload_token}",
-        data=csv_content,
-        headers={"Content-Type": "text/csv"},
-        timeout=60
-    )
+    for attempt in range(3):
 
-    print("Status:", upload.status_code)
-    print("Request URL:", upload.request.url)
-    print("Final URL:", upload.url)
+        try:
 
-    if upload.status_code >= 400:
-        print(upload.text)
-        upload.raise_for_status()
+            with open(file, "rb") as f:
+                csv_content = f.read()
 
-    print("Response:", upload.text)
+            upload = session.post(
+                f"{webapp_url}?filename={os.path.basename(file)}&token={upload_token}",
+                data=csv_content,
+                headers={"Content-Type": "text/csv"},
+                timeout=60
+            )
+
+            print(f"Attempt {attempt+1}")
+            print("Status:", upload.status_code)
+            print("Request URL:", upload.request.url)
+            print("Final URL:", upload.url)
+
+            upload.raise_for_status()
+
+            if upload.text.strip() != "OK":
+                raise Exception(f"Apps Script returned: {upload.text}")
+
+            print("Response:", upload.text)
+            print(f"Uploaded {os.path.basename(file)} successfully")
+
+            success = True
+            break
+
+        except Exception as ex:
+
+            print(f"Upload attempt {attempt+1} failed:")
+            print(ex)
+
+            if attempt < 2:
+                print("Retrying in 10 seconds...")
+                time.sleep(10)
+
+    if not success:
+        raise Exception(f"Failed to upload {os.path.basename(file)} after 3 attempts.")
