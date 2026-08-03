@@ -105,16 +105,26 @@ print(f"Updated {rolling_file}")
 print("Web App URL:", webapp_url)
 # --- Upload to Google Drive, then stop — no git commit ---
 for file in [filename, rolling_file]:
+
+    print("=" * 60)
+    print("Uploading:", os.path.basename(file))
+
     with open(file, "rb") as f:
         csv_content = f.read()
+
     upload = session.post(
         f"{webapp_url}?filename={os.path.basename(file)}&token={upload_token}",
         data=csv_content,
         headers={"Content-Type": "text/csv"},
         timeout=60
     )
-    if upload.status_code >= 400 or "OK" not in upload.text:
-        print(f"Upload failed: {upload.status_code},os.path.basename(file)")
+
+    print("Status:", upload.status_code)
+    print("Request URL:", upload.request.url)
+    print("Final URL:", upload.url)
+
+    if upload.status_code >= 400:
         print(upload.text)
         upload.raise_for_status()
-    print(f"Uploaded {os.path.basename(file)} to Google Drive")
+
+    print("Response:", upload.text)
