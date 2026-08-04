@@ -93,15 +93,36 @@ print(f"Saved to {filename}")
 # --------------------------------------------
 # Create/update rolling forecast CSV
 # --------------------------------------------
+
 rolling_file = "data/rolling_forecast.csv"
-# Take only the first 3 forecast timestamps
-rolling_df = df.head(3).copy()
-# Append to existing rolling CSV if it exists
+
+# First 3 forecast rows
+new_rows = df.head(3).copy()
+
 if os.path.exists(rolling_file):
-    existing_df = pd.read_csv(rolling_file)
-    rolling_df = pd.concat([existing_df, rolling_df], ignore_index=True)
-# Save updated rolling CSV
-rolling_df.to_csv(rolling_file, index=False)
+
+    rolling_df = pd.read_csv(rolling_file)
+
+    rolling_df = pd.concat(
+        [rolling_df, new_rows],
+        ignore_index=True
+    )
+
+    # Prevent duplicate timestamps
+    rolling_df = rolling_df.drop_duplicates(
+        subset=["period_end"],
+        keep="first"
+    )
+
+else:
+
+    rolling_df = new_rows
+
+rolling_df.to_csv(
+    rolling_file,
+    index=False
+)
+
 print(f"Updated {rolling_file}")
 print("Web App URL:", webapp_url)
 
