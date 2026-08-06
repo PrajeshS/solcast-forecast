@@ -174,5 +174,7 @@ for file in [filename, rolling_file]:
                 time.sleep(10)
 
     if not success:
-        raise Exception(f"Failed to upload {os.path.basename(file)} after 3 attempts.")
-print(webapp_url)
+        print("=" * 60)
+        print(f"WARNING: Failed to upload {os.path.basename(file)} after 3 attempts.")
+        print("Continuing so GitHub Actions can commit the updated CSVs.")
+
