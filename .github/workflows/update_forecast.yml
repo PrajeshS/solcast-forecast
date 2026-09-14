@@ -3,7 +3,7 @@ name: Update Solcast Forecast
 on:
   workflow_dispatch:
 
-# Prevent two Solcast runs from trying to push to main simultaneously
+# Prevent overlapping Solcast runs from pushing to main
 concurrency:
   group: solcast-forecast-update
   cancel-in-progress: false
