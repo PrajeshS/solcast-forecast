@@ -1,22 +1,36 @@
 name: Update Solcast Forecast
+
 on:
   workflow_dispatch:
+
+# Prevent two Solcast runs from trying to push to main simultaneously
+concurrency:
+  group: solcast-forecast-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Run Python script
         env:
           SOLCAST_API_KEY: ${{ secrets.SOLCAST_API_KEY }}
@@ -26,13 +40,39 @@ jobs:
           GDRIVE_WEBAPP_URL: ${{ secrets.GDRIVE_WEBAPP_URL }}
           GDRIVE_UPLOAD_TOKEN: ${{ secrets.GDRIVE_UPLOAD_TOKEN }}
         run: python solcast_api.py
+
       - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      
+
           git add data/
-      
-          git diff --cached --quiet || git commit -m "Update Solcast forecast"
-      
-          git push
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update Solcast forecast"
+
+          git fetch origin main
+          git rebase origin/main
+
+          for i in 1 2 3 4 5; do
+            echo "Push attempt $i..."
+
+            if git push origin HEAD:main; then
+              echo "Push successful."
+              exit 0
+            fi
+
+            echo "Push failed. Fetching latest main and retrying..."
+
+            git fetch origin main
+            git rebase origin/main
+
+            sleep $((i * 5))
+          done
+
+          echo "Push failed after 5 attempts."
+          exit 1
