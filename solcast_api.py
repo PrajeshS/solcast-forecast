@@ -29,9 +29,11 @@ retry = Retry(
     total=3,
     connect=3,
     read=3,
-    backoff_factor=2,
-    status_forcelist=[429, 500, 502, 503, 504],
-    allowed_methods=["GET", "POST"]
+    status=3,
+    backoff_factor=5,
+    status_forcelist=[409, 429, 500, 502, 503, 504],
+    allowed_methods=["GET", "POST"],
+    respect_retry_after_header=True
 )
 
 session = requests.Session()
